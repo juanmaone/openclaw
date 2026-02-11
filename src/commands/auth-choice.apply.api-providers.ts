@@ -25,6 +25,8 @@ import {
   applyMoonshotConfigCn,
   applyMoonshotProviderConfig,
   applyMoonshotProviderConfigCn,
+  applyNvidiaConfig,
+  applyNvidiaProviderConfig,
   applyOpencodeZenConfig,
   applyOpencodeZenProviderConfig,
   applyOpenrouterConfig,
@@ -45,6 +47,7 @@ import {
   QIANFAN_DEFAULT_MODEL_REF,
   KIMI_CODING_MODEL_REF,
   MOONSHOT_DEFAULT_MODEL_REF,
+  NVIDIA_DEFAULT_MODEL_REF,
   OPENROUTER_DEFAULT_MODEL_REF,
   SYNTHETIC_DEFAULT_MODEL_REF,
   TOGETHER_DEFAULT_MODEL_REF,
@@ -57,6 +60,7 @@ import {
   setLitellmApiKey,
   setKimiCodingApiKey,
   setMoonshotApiKey,
+  setNvidiaApiKey,
   setOpencodeZenApiKey,
   setOpenrouterApiKey,
   setSyntheticApiKey,
@@ -502,6 +506,53 @@ export async function applyAuthChoiceApiProviders(
         defaultModel: MOONSHOT_DEFAULT_MODEL_REF,
         applyDefaultConfig: applyMoonshotConfigCn,
         applyProviderConfig: applyMoonshotProviderConfigCn,
+        noteAgentModel,
+        prompter: params.prompter,
+      });
+      nextConfig = applied.config;
+      agentModelOverride = applied.agentModelOverride ?? agentModelOverride;
+    }
+    return { config: nextConfig, agentModelOverride };
+  }
+
+  if (authChoice === "nvidia-api-key") {
+    let hasCredential = false;
+
+    if (!hasCredential && params.opts?.token && params.opts?.tokenProvider === "nvidia") {
+      await setNvidiaApiKey(normalizeApiKeyInput(params.opts.token), params.agentDir);
+      hasCredential = true;
+    }
+
+    const envKey = resolveEnvApiKey("nvidia");
+    if (envKey) {
+      const useExisting = await params.prompter.confirm({
+        message: `Use existing NVIDIA_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        initialValue: true,
+      });
+      if (useExisting) {
+        await setNvidiaApiKey(envKey.apiKey, params.agentDir);
+        hasCredential = true;
+      }
+    }
+    if (!hasCredential) {
+      const key = await params.prompter.text({
+        message: "Enter NVIDIA API key",
+        validate: validateApiKeyInput,
+      });
+      await setNvidiaApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
+    }
+    nextConfig = applyAuthProfileConfig(nextConfig, {
+      profileId: "nvidia:default",
+      provider: "nvidia",
+      mode: "api_key",
+    });
+    {
+      const applied = await applyDefaultModelChoice({
+        config: nextConfig,
+        setDefaultModel: params.setDefaultModel,
+        defaultModel: NVIDIA_DEFAULT_MODEL_REF,
+        applyDefaultConfig: applyNvidiaConfig,
+        applyProviderConfig: applyNvidiaProviderConfig,
         noteAgentModel,
         prompter: params.prompter,
       });
