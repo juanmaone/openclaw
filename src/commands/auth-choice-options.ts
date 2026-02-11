@@ -67,6 +67,12 @@ const AUTH_CHOICE_GROUP_DEFS: {
     choices: ["moonshot-api-key", "moonshot-api-key-cn", "kimi-code-api-key"],
   },
   {
+    value: "nvidia",
+    label: "NVIDIA",
+    hint: "Kimi 2.5 via NVIDIA API",
+    choices: ["nvidia-api-key"],
+  },
+  {
     value: "google",
     label: "Google",
     hint: "Gemini API key + OAuth",
@@ -214,6 +220,11 @@ export function buildAuthChoiceOptions(params: {
   options.push({
     value: "kimi-code-api-key",
     label: "Kimi Code API key (subscription)",
+  });
+  options.push({
+    value: "nvidia-api-key",
+    label: "NVIDIA API key",
+    hint: "Kimi 2.5 via NVIDIA API",
   });
   options.push({ value: "synthetic-api-key", label: "Synthetic API key" });
   options.push({

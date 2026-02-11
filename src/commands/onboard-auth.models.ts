@@ -97,6 +97,30 @@ export function buildMoonshotModelDefinition(): ModelDefinitionConfig {
   };
 }
 
+export const NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1";
+export const NVIDIA_DEFAULT_MODEL_ID = "moonshot/kimi-2-5";
+export const NVIDIA_DEFAULT_MODEL_REF = `nvidia/${NVIDIA_DEFAULT_MODEL_ID}`;
+export const NVIDIA_DEFAULT_CONTEXT_WINDOW = 256000;
+export const NVIDIA_DEFAULT_MAX_TOKENS = 8192;
+export const NVIDIA_DEFAULT_COST = {
+  input: 0,
+  output: 0,
+  cacheRead: 0,
+  cacheWrite: 0,
+};
+
+export function buildNvidiaModelDefinition(): ModelDefinitionConfig {
+  return {
+    id: NVIDIA_DEFAULT_MODEL_ID,
+    name: "Kimi 2.5 (NVIDIA)",
+    reasoning: false,
+    input: ["text"],
+    cost: NVIDIA_DEFAULT_COST,
+    contextWindow: NVIDIA_DEFAULT_CONTEXT_WINDOW,
+    maxTokens: NVIDIA_DEFAULT_MAX_TOKENS,
+  };
+}
+
 export const XAI_BASE_URL = "https://api.x.ai/v1";
 export const XAI_DEFAULT_MODEL_ID = "grok-4";
 export const XAI_DEFAULT_MODEL_REF = `xai/${XAI_DEFAULT_MODEL_ID}`;
